@@ -1,0 +1,51 @@
+version: "3.9"
+
+x-api-environment:
+  &default-api-environment
+  NODE_ENV: ${DK_ENVIRONMENT}
+  API_PORT: ${API_PORT}
+  API_DEGUG_PORT: ${API_DEGUG_PORT}
+  API_JWT_SECRET: ${API_JWT_SECRET}
+  API_JWT_EXPIRATION: ${API_JWT_EXPIRATION}
+
+services:
+
+  api:
+    build:
+      context: ./projects/api
+      args:
+        DK_UID: ${DK_UID}
+        DK_GID: ${DK_GID}
+        DK_ENVIRONMENT: ${DK_ENVIRONMENT}
+    container_name: ${DK_PROJECT_NAME}_api
+    ports:
+      - "${API_PORT}:3000"
+      - "${API_DEGUG_PORT}:${API_DEGUG_PORT}"
+    environment: *default-api-environment
+    volumes:
+      - ${PWD}/projects/api:/home/node/project
+    networks:
+      - backend
+    command: [ "npm", "run", "start:debug" ]
+
+  front:
+    build:
+      context: ./projects/front
+      args:
+        DK_UID: ${DK_UID}
+        DK_GID: ${DK_GID}
+        DK_ENVIRONMENT: ${DK_ENVIRONMENT}
+    container_name: ${DK_PROJECT_NAME}_front
+    ports:
+      - "${FRONTEND_PORT}:3000"
+    environment:
+      NODE_ENV: ${DK_ENVIRONMENT}
+    volumes:
+      - ${PWD}/projects/front:/home/node/project
+    networks:
+      - backend
+    command: [ "npm", "run", "dev" ]
+
+networks:
+  backend:
+    driver: bridge
