@@ -7,6 +7,9 @@ x-api-environment:
   API_DEGUG_PORT: ${API_DEGUG_PORT}
   API_JWT_SECRET: ${API_JWT_SECRET}
   API_JWT_EXPIRATION: ${API_JWT_EXPIRATION}
+  MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+  MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+  MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
 
 services:
 
@@ -45,6 +48,23 @@ services:
     networks:
       - backend
     command: [ "npm", "run", "dev" ]
+
+  mongodb:
+    build:
+      context: ./docker/services/mongodb
+      args:
+        DK_UID: ${DK_UID}
+        DK_GID: ${DK_GID}
+    container_name: ${DK_PROJECT_NAME}_mongodb
+    ports:
+      - "${MONGO_INITDB_PORT}:${MONGO_INITDB_PORT}"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+    volumes:
+      - ${PWD}/docker/services/mongodb/docker-entrypoint-initdb.d/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
+      - ${PWD}/docker/volumes/mongodb:/data/db
 
 networks:
   backend:
