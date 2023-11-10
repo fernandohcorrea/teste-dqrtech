@@ -2,7 +2,6 @@ import { Command } from "commander";
 import path from "path";
 import fs from "fs";
 import AbstractCommand from "./Base/AbstractCommand.js";
-import Config from '../Utils/Config.js';
 
 /**
  * InstallCommand
@@ -34,8 +33,8 @@ export default class InstallCommand extends AbstractCommand {
   async #run() {
     console.time("Install Time");
     await this.#getSubModules();
-    // await this.#doInstallDependencies();
-    // await this.#doCopyEnv();
+    await this.#doInstallDependencies();
+    await this.#doCopyEnv();
     console.timeEnd("Install Time");
   }
 
@@ -43,9 +42,24 @@ export default class InstallCommand extends AbstractCommand {
    * Responde por obter informações de SubModules
    */
   async #getSubModules() {
-    let projectsCfg = Config.getInstance().get();
-    console.log(projectsCfg);
+    const projectsCfg = this.config.get('projects');
+    const defaultPath = projectsCfg?.default?.paths || 'projects';
+    const list = projectsCfg?.list || [];
     
+    for (const key in list) {
+      const pj = list[key];
+
+      if( ! pj.dirname ){
+        continue;
+      }
+
+      this.submodules.push(`${defaultPath}/${pj.dirname}`)
+    }
+
+    if (this.submodules.length === 0){
+      this.strOut.outDanger("Sem SubModulos");
+      process.exit(1);
+    }
   }
 
   /**
@@ -73,21 +87,6 @@ export default class InstallCommand extends AbstractCommand {
       pkg_cfgs
     );
 
-    let git_cfgs = this.config.get("git");
-    git_cfgs = Object.assign(
-      {
-        submodules: {},
-      },
-      git_cfgs
-    );
-
-    const git_default_cfg = Object.assign(
-      {
-        branch: "main",
-      },
-      git_cfgs?.default
-    );
-
     const pkg_default_cfg = Object.assign(
       {
         exec: "npm",
@@ -99,6 +98,7 @@ export default class InstallCommand extends AbstractCommand {
     for (const key in this.submodules) {
       if (Object.prototype.hasOwnProperty.call(this.submodules, key)) {
         const submodule = this.submodules[key];
+        
         const path_submodule = path.join(
           `${process.env.ROOT_PATH}`,
           `/${submodule}`
@@ -109,23 +109,14 @@ export default class InstallCommand extends AbstractCommand {
           continue;
         }
 
-        let git_submodule =
-          Object.prototype.hasOwnProperty.call(
-            git_cfgs.submodules,
-            submodule
-          ) == true
-            ? git_cfgs.submodules[submodule]
-            : {};
-        git_submodule = Object.assign({}, git_default_cfg, git_submodule);
-
         let pkg_submodule =
-          Object.prototype.hasOwnProperty.call(
+        Object.prototype.hasOwnProperty.call(
             pkg_cfgs.submodules,
             submodule
-          ) == true
+            ) == true
             ? pkg_cfgs.submodules[submodule]
             : {};
-        pkg_submodule = Object.assign({}, pkg_default_cfg, pkg_submodule);
+            pkg_submodule = Object.assign({}, pkg_default_cfg, pkg_submodule);
 
         const npm_submodule_path = path.join(
           path_submodule,
@@ -158,63 +149,12 @@ export default class InstallCommand extends AbstractCommand {
         );
 
         let cmds = [`cd ${path_submodule}`];
-
-        const select_option = ["Sim", "Não"];
-        this.strOut.outWarning(
-          `ATENÇÃO: Isso vai apagar suas modificações ao voltar para ${git_submodule.branch.toUpperCase()}`,
-          true
-        );
-
-        let checkBranch = await this.questionSelect(
-          `Apontar projeto(${submodule}) para branch "${git_submodule.branch}" ?`,
-          select_option
-        );
-
-        switch (checkBranch) {
-          case 0:
-            cmds.push("touch apagar");
-            cmds.push('git stash --include-untracked -m "apagar"');
-            cmds.push("git stash drop");
-            cmds.push(`git checkout ${git_submodule.branch}`);
-            cmds.push("rm -fr node_modules");
-            break;
-
-          case 1:
-            cmds.push("rm -fr node_modules");
-            break;
-
-          case -1:
-            process.exit(1)
-            break;
-        }
+        cmds.push("rm -fr node_modules");
 
         this.strOut.outSession(
           `== SubMolule - Dependências: ${submodule.toUpperCase()} ==`,
           "success"
         );
-
-        if (package_manager_type !== pkg_submodule.exec) {
-          let pm_option = ["Não", "Sim"];
-          let check_pm = await this.questionSelect(
-            `O projeto(${submodule}) usa ${package_manager_type} deseja utilizar ${pkg_submodule.exec} `,
-            pm_option
-          );
-
-          switch (check_pm) {
-            case 0:
-              //No Code!
-              break;
-
-            case 1:
-              package_manager_type = pkg_submodule.exec;
-              break;
-
-            case -1:
-            default:
-              process.exit(0);
-              break;
-          }
-        }
 
         const extra_install_args =
           typeof pkg_submodule?.install_args == "object"
@@ -265,7 +205,7 @@ export default class InstallCommand extends AbstractCommand {
         break;
 
       case 0:
-        cmds.push("cp .env.example .env");
+        cmds.push("cp .env-sample .env");
         break;
       case -1:
       default:

@@ -32,10 +32,10 @@
       },
       "list": [
         {
-          "name": "api"
+          "dirname": "api"
         },
         {
-          "name": "front"
+          "dirname": "front"
         }
       ]
     }

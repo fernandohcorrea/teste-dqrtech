@@ -27,6 +27,9 @@ services:
     environment: *default-api-environment
     volumes:
       - ${PWD}/projects/api:/home/node/project
+    depends_on:
+      mongodb:
+        condition: service_started
     networks:
       - backend
     command: [ "npm", "run", "start:debug" ]
@@ -45,6 +48,9 @@ services:
       NODE_ENV: ${DK_ENVIRONMENT}
     volumes:
       - ${PWD}/projects/front:/home/node/project
+    depends_on:
+      api:
+        condition: service_started
     networks:
       - backend
     command: [ "npm", "run", "dev" ]
