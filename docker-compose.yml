@@ -7,9 +7,12 @@ x-api-environment:
   API_DEGUG_PORT: ${API_DEGUG_PORT}
   API_JWT_SECRET: ${API_JWT_SECRET}
   API_JWT_EXPIRATION: ${API_JWT_EXPIRATION}
+  MONGO_INITDB_HOST: 'mongodb'
+  MONGO_INITDB_PORT: ${MONGO_INITDB_PORT}
   MONGO_INITDB_ROOT_USERNAME: ${MONGO_INITDB_ROOT_USERNAME}
   MONGO_INITDB_ROOT_PASSWORD: ${MONGO_INITDB_ROOT_PASSWORD}
   MONGO_INITDB_DATABASE: ${MONGO_INITDB_DATABASE}
+
 
 services:
 
@@ -22,7 +25,7 @@ services:
         DK_ENVIRONMENT: ${DK_ENVIRONMENT}
     container_name: ${DK_PROJECT_NAME}_api
     ports:
-      - "${API_PORT}:3000"
+      - "${API_PORT}:${API_PORT}"
       - "${API_DEGUG_PORT}:${API_DEGUG_PORT}"
     environment: *default-api-environment
     volumes:
@@ -71,6 +74,8 @@ services:
     volumes:
       - ${PWD}/docker/services/mongodb/docker-entrypoint-initdb.d/mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
       - ${PWD}/docker/volumes/mongodb:/data/db
+    networks:
+      - backend
 
 networks:
   backend:
