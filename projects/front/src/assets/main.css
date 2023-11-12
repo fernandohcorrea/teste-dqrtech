@@ -8,6 +8,20 @@
   font-weight: normal;
 }
 
+#tb {
+  min-width: 900px;
+}
+
+thead {
+  background-color: rgb(111, 114, 114);
+  font-weight: bold;
+  font-size: 22px;
+}
+
+tbody {
+  background-color: rgb(71, 71, 71);
+}
+
 a,
 .green {
   text-decoration: none;
