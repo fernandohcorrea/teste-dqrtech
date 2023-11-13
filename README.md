@@ -40,6 +40,6 @@ $ docker compose up --build
 ### Postman
 
 Postman Docs: 
-<a href="" target="_blank">
+<a href="https://github.com/fernandohcorrea/teste-dqrtech/tree/main/docs" target="_blank">
 link
 </a>
