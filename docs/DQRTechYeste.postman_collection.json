@@ -1,0 +1,126 @@
+{
+	"info": {
+		"_postman_id": "f7f50b98-b4fa-4f88-8c99-273324084675",
+		"name": "DQRTechYeste",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "273446"
+	},
+	"item": [
+		{
+			"name": "knights",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"name\": \"Yan\",\n    \"nickname\" : \"Yac\",\n    \"birthday\": \"2015-03-16\",\n    \"weapons\": [\n        {\n            \"name\": \"sword\",\n            \"mod\": 3,\n            \"attr\": \" strength\",\n            \"equipped\": true\n        }\n    ],\n    \"attributes\": {\n        \"strength\": 0,\n        \"dexterity\": 0,\n        \"constitution\": 0,\n        \"intelligence\": 0,\n        \"wisdom\": 0,\n        \"charisma\": 0\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api-url}}/knights",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"knights"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "knights",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api-url}}/knights",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"knights"
+					],
+					"query": [
+						{
+							"key": "heroes",
+							"value": "ftrue",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "knights",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nickname\": \"fcorrea\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api-url}}/knights/654f924b9bca31b337e8e767",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"knights",
+						"654f924b9bca31b337e8e767"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "knights",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"nickname\": \"fcorrea\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{api-url}}/knights/6550e6896e1bc2e5cecd65c9",
+					"host": [
+						"{{api-url}}"
+					],
+					"path": [
+						"knights",
+						"6550e6896e1bc2e5cecd65c9"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
